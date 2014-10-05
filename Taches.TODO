@@ -1,0 +1,36 @@
+
+--- ✄ -----------------------
+Informations:
+ ☐ Vérifier les version OPENGL disponible au lycée.
+
+
+--- ✄ -----------------------
+GameState:
+  Taches a faire dans le fichier ./GameState.c
+  ☐ Changer les "#DEFINE" en variables pour la taille de la fenetre. En rendre la taille de la fenetre modifiable.
+
+--- ✄ -----------------------
+MainMenu:
+  Taches a faire dans le fichier ./MainMenu.c
+  ☐ Vérifier les fonctions de flush de la SDL pour le rafréchissement de la fenetre. ./MainMenu.c"TODO: Flush"
+  ✔ Faire le changement de state pour la demo. ./MainMenu.c"TODO: ChangeState_1" ./MainMenu.c"TODO: ChangeState_2" @done (14-09-26 23:32)
+  ✔ Texture du bouton activé. ./MainMenu.c"TODO: BoutonCliqué" @done (14-09-22 22:08)
+  ✔ Créer le selector pour le menu. @done (14-09-22 22:18)
+  ✔ Utiliser les spec du bouton et de la fenetre pour le placement des textures. ./MainMenu.c"S_MainMenu_Draw" @done (14-09-22 21:43)
+
+--- ✄ -----------------------
+OPENGL:
+  Tout les TODO qui concerne la partie OPENGL du programme
+  ☐ (1st) Ajouter une camera et tout ce qui va avec.
+  ☐ (CRITIQUE) Voire la gestion d'opengl 2.0
+  ☐ Creation d'un chargeur de model WaveFront.
+  ☐ Faire un fichier pour les calcules matriciels et perspectives.
+  ☐ Supprimer la fonction test dans ./DemoOpengl.c
+  ✔ Creation chargeur shader. @done (14-10-03 19:56)
+  ✔ Créer une demo d'un triangle coloré. @done (14-09-28 22:00)
+    ShaderLoader:
+    ☐ Ajouter dans la struct du shader (./ShaderHandler.h:"typedef struct") les id des variables de matrice de camera et perspective
+    ✔ (CRITIQUE) Vérification de la mémoire aloué pour contenir les fragmentShader et vertexShader. @done (14-10-03 19:56)
+    ✔ Tester le chargeur de shader avec un exemple simple. @done (14-09-28 21:59)
+    Matrices:
+    ✔ Créer fonction de base @done (14-10-05 19:15)
