@@ -1,6 +1,6 @@
 # Compilateur
-CC = ../../../MinGW/bin/mingw32-gcc.exe
-#CC = gcc
+#CC = ../../../MinGW/bin/mingw32-gcc.exe
+CC = gcc
 # Flags de compilation
 CFLAGS = --std=c99 -Wall -ggdb -g3 -W
 # Flags de biblioteque

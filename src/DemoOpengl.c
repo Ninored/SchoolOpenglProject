@@ -7,59 +7,26 @@
 #include <GL/glew.h>
 
 #include "ShaderHandler.h"
+#include "Camera.h"
 #include "Matrix.h"
+#include "Model.h"
 
-static SDL_Event event;
-static SDL_GLContext openglContext;
-static void S_DemoOpengl_Resized(void);
+/* Variables d'evenement */
+static SDL_Event event; // Gestionnaire d'evenement
+static int Keys[256] = {0}; // 0 Key up | 1 Key Down
+static int mouseX, mouseY;
 
-static Shader shaderPrincipal;
-/* TEST */
-static GLfloat vertex[9] = {
-	-1.0f,-1.0f,0.0f,
-	1.0f,-1.0f,0.0f,
-	0.0f,1.0f,0.0f
-};
+static SDL_GLContext openglContext; // Context Opengl
+static void S_DemoOpengl_Resized(void);	// Redimentionnement de la fenetre. A conserver
 
-static GLfloat color[9] = {
-	1.0f, 1.0f, 0.0f,
-	0.0f, 1.0f, 1.0f,
-	1.0f, 0.0f, 1.0f
-};
 
-static GLuint vbo = 0;
-static GLuint vao = 0;
-static GLuint vco = 0;
+/* Model de la scene */
+Model Model_Triangle;
 
 static void MiniTest(void)
 {
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenBuffers(1, &vco);
-	glBindBuffer(GL_ARRAY_BUFFER, vco);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, vco);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glBindVertexArray(0);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
-	SH_Load(&shaderPrincipal, "./Assets/Shader/Default.vs", "./Assets/Shader/Default.fs");
-
-
+	MODEL_TEST_Triangle(&Model_Triangle);
+// teste des matrice
 
 	Mat4f matriceA;
 	Mat4f matriceB;
@@ -106,7 +73,6 @@ static void MiniTest(void)
 	matriceB[3][3] = 0;
 	MAT_Identity(matriceC);
 	MAT_Mult(matriceC, matriceA, matriceB);
-	MAT_Print(matriceC);
 
 }
 
@@ -125,7 +91,7 @@ int S_DemoOpengl_Init(void)
 
 
 	// Rendu: 1=VSync 0=Direct
-	SDL_GL_SetSwapInterval(0);
+	SDL_GL_SetSwapInterval(1);
 	printf("\n\n");
 	printf("#################################################\n");
 	printf("[INFO]\tOPENGL_Version: %s\n", glGetString(GL_VERSION));
@@ -142,6 +108,11 @@ int S_DemoOpengl_Init(void)
 	}
 
 	glEnable(GL_DEPTH_TEST); // gestion de la profondeur ZBuffer
+	//glEnable(GL_CULL_FACE);
+
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+	
+	CAM_Init();
 
 	MiniTest();
 
@@ -155,49 +126,48 @@ void S_DemoOpengl_Quit(void)
 
 void S_DemoOpengl_Resized(void)
 {
-	// TODO: refaire la matrice de perspective
 	SDL_GetWindowSize(Window, &WINDOWS_W, &WINDOWS_H);
+	CAM_RebuildProjection();
 }
 
 void S_DemoOpengl_Event(void)
 {
 	while(SDL_PollEvent(&event))
 	{
-		switch(event.type)
-		{
-			case SDL_QUIT:
-				_ExitGame();
-				break;
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-					_ExitGame();
-					break;
-				}
-				break;
-			case SDL_WINDOWEVENT:
-				if(event.window.event == SDL_WINDOWEVENT_RESIZED)
-					S_DemoOpengl_Resized();
-				break;
-		}		
+		if(event.type == SDL_KEYDOWN)
+			Keys[event.key.keysym.sym] = 1;
+		if(event.type == SDL_KEYUP)
+			Keys[event.key.keysym.sym] = 0;
+		if(Keys[SDLK_ESCAPE])	// priorité a la sortie
+			_ExitGame();
 	}
+
+	// Evenements
+	if(Keys[SDLK_z] == 1)
+		CAM_Forward(0.1f);
+
+	if(Keys[SDLK_s] == 1)
+		CAM_Forward(-0.1f);
+
+	if(Keys[SDLK_d] == 1)
+		CAM_Right(0.1f);
+
+	if(Keys[SDLK_q] == 1)
+		CAM_Right(-0.1f);
 }
 
 void S_DemoOpengl_Compute(void)
 {
-
+	SDL_GetRelativeMouseState(&mouseX, &mouseY);
+	CAM_Yaw((float)mouseX);
+	CAM_Pitch((float)mouseY);
 }
 
 void S_DemoOpengl_Draw(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	glUseProgram(shaderPrincipal.shaderID);
-	glBindVertexArray(vao);
-	int size;  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	glDrawArrays(GL_TRIANGLES, 0, ((size) / sizeof(GL_FLOAT)));
-	glBindVertexArray(0);
+	MODEL_Display(&Model_Triangle);
 
 
 	glFlush();

@@ -6,6 +6,8 @@
 
 typedef struct {
 	GLuint shaderID;
+	GLuint UniformCamMatrix; // matrice camera
+	GLuint UniformPerspectiveMatrix; // matrice perspective
 }Shader;
 
 void SH_Load(Shader *shad, const char* vertexFilePath, const char* fragmentFilePath);	 // Charger un shader

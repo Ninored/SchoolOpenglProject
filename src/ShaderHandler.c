@@ -13,8 +13,9 @@ static void printShaderLog(GLuint shader);
  */
 void SH_Load(Shader *shad, const char* vertexFile, const char* fragmentFile)
 {
-	// TODO: ajouter les variables pour la camera par shader
 	shad->shaderID = LoadShader(vertexFile, fragmentFile);
+	shad->UniformCamMatrix = glGetUniformLocation(shad->shaderID, "CameraMatrix");
+	shad->UniformPerspectiveMatrix = glGetUniformLocation(shad->shaderID, "PerspectiveMatrix");
 }
 
 /**
