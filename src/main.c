@@ -44,7 +44,7 @@ void beginState(void)
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		WINDOWS_W, WINDOWS_H,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (Window == NULL)	// En cas d'erreur
 	{
 		printf("[ERROR]\tError while creating Window: %s\n", SDL_GetError());

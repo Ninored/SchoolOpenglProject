@@ -8,16 +8,15 @@
  */
 void MAT_Mult(Mat4f out, Mat4f InA, Mat4f InB)
 {
-	/*
-	FIXME: METHODE TROP LENTE...
-	unsigned int col;
+	
+	// FIXME:
+	/*unsigned int col;
 	unsigned int row;
 	unsigned int i;
-	for(row = 0; row <= 3; row++)
-		for(col = 0; col <= 3; col++)
-			for(i = 0; i <= 3; i++)
-				out[row][col] += InA[row][i] * InB[i][col];
-*/
+	for(row = 0; row < 3; row++)
+		for(col = 0; col < 3; col++)
+			for(i = 0; i < 3; i++)
+				out[row][col] += InA[row][i] * InB[i][col]; */
 
 	out[0][0] = InA[0][0] * InB[0][0] + InA[0][1] * InB[1][0] + InA[0][2] * InB[2][0] + InA[0][3] * InB[3][0];	// Gx
 	out[0][1] = InA[0][0] * InB[0][1] + InA[0][1] * InB[1][1] + InA[0][2] * InB[2][1] + InA[0][3] * InB[3][1];	// Gy
@@ -95,14 +94,14 @@ void MAT_Projection(Mat4f matrix, float w, float h, float f, float n, float fov)
 	matrix[3][2] = -1.0f;
 	matrix[3][3] = 0.0f;
 	printf("\nMatrice de projection genere: \n");
-	MAT_Print(matrix);
+	MAT_PrintFancy(matrix);
 }
 
 void MAT_Translate(Mat4f matrix, float x, float y, float z)
 {
-	matrix[0][3] += x;
-	matrix[1][3] += y;
-	matrix[2][3] += z;
+	matrix[0][3] += -x;
+	matrix[1][3] += -y;
+	matrix[2][3] += -z;
 }
 
 void MAT_Rotate(Mat4f matrix, float deg, float x, float y, float z)
@@ -135,5 +134,14 @@ void MAT_Print(Mat4f matrix)
 	for(r = 0; r < 4; r++)
 		for(c = 0; c < 4; c++)
 			printf("[%d][%d]: %lf\n",r, c, matrix[r][c]);
+	printf("\n\n");
+}
+
+void MAT_PrintFancy(Mat4f matrix)
+{
+	unsigned int r = 0;
+	printf("%10s | %8d | %8d | %8d | %8d\n", "[4*4]", 0, 1, 2, 3);
+	for(r = 0; r < 4; r++)
+		printf("[%8d] | %8.4f | %8.4f | %8.4f | %8.4f\n", r, matrix[r][0], matrix[r][1], matrix[r][2], matrix[r][3]);
 	printf("\n\n");
 }

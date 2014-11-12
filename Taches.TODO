@@ -1,3 +1,5 @@
+Critique:
+ ☐ Vérifier mes fuites mémoires. (Camera, OpenglScene) 
 
 --- ✄ -----------------------
 Informations:
@@ -6,7 +8,7 @@ Informations:
 --- ✄ -----------------------
 GameState:
   Taches a faire dans le fichier ./GameState.c
-  ☐  (A finir) Changer les "#DEFINE" en variables pour la taille de la fenetre. En rendre la taille de la fenetre modifiable.
+  ✘  (A finir) Changer les "#DEFINE" en variables pour la taille de la fenetre. En rendre la taille de la fenetre modifiable. @cancelled (14-11-12 22:18)
 
 --- ✄ -----------------------
 MainMenu:
@@ -21,8 +23,8 @@ MainMenu:
 OPENGL:
   Tout les TODO qui concerne la partie OPENGL du programme
   ☐ (CRITIQUE) Voire la gestion d'opengl 2.0
-  ☐ Creation d'un chargeur de model WaveFront.
-  ☐ Supprimer la fonction test dans ./DemoOpengl.c
+  ✔ Creation d'un chargeur de model WaveFront. @done (14-11-12 22:18)
+  ✔ Supprimer la fonction test dans ./DemoOpengl.c @done (14-11-12 22:18)
   ✔ Faire un fichier pour les calcules matriciels et perspectives. @done (14-10-30 16:57)
   ✔ (1st) Ajouter une camera et tout ce qui va avec. @done (14-10-30 16:57)
   ✔ Creation chargeur shader. @done (14-10-03 19:56)
@@ -36,5 +38,9 @@ OPENGL:
     Camera:
     ☐ (CRITIQUE) Créer une fonction "quit" pour la camera (libération de la mémoire pour les matrices instanciers). ./Camera.c:"ID:T:0.1"
     Chargeur de model (./Model.h):
-    ☐ Créer un chargeur de model. Avec VBO VAO mais pas d'indices
-    ☐ Finir le test cube, terminer les faces et les vérifier ./Model.c:"ID:T:0.1"
+    ✔ Créer un chargeur de model. Avec VBO VAO mais pas d'indices @done (14-11-12 22:18)
+    ✔ Remplacer le buffer de couleur par la texture. ./Model.c:"ID:T:0.2" @done (14-11-12 22:18)
+    ☐ Commenter les "strcmp" pour annoncer l'action ./WavefrontLoader.c:"ID:T:0.1"
+    ✔ Finir le test cube, terminer les faces et les vérifier ./Model.c:"ID:T:0.1" @done (14-10-31 22:35)
+    Lumière:
+    ✔ Mise en place de la lumière diffuse et spéculaire avec shader. @done (14-11-12 22:19)

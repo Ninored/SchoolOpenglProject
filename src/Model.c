@@ -1,16 +1,38 @@
 #include "Model.h"
 #include "Camera.h"
+#include "WavefrontLoader.h"
+#include "Light.h"
 
-void MODEL_Load(Model *model, const char* shadersFiles)
+#include <stdio.h>
+
+void MODEL_Load(Model *model, const char* filepath, const char* vertexShader, const char* fragmentShader)
 {
+	WAVEFRONT_Load(model, filepath);
+	SH_Load(&model->shader, vertexShader, fragmentShader);
+}
 
+void MODEL_Free(Model *model)
+{
+	glDeleteBuffers(1, &model->vbo); // vbo free
+	glDeleteBuffers(1, &model->tbo); // tbo free // TODO: ID:T:0.2 a remplacer par le texture plus tard
+	glDeleteBuffers(1, &model->nbo); // nbo free
+	glDeleteVertexArrays(1, &model->vao); // vao free
+	glDeleteProgram(model->shader.shaderID); // shader free
+	                                
 }
 
 void MODEL_Display(Model *model)
 {
 	
 	glUseProgram(model->shader.shaderID);
+	
+	// envoi des info camera au shader
 	CAM_Display(model);
+	//envoi des info material au shader
+	glProgramUniform1f(model->shader.shaderID, model->shader.UniformNs, model->material.Ns);
+	glProgramUniform3f(model->shader.shaderID, model->shader.UniformKa, model->material.Ka[0], model->material.Ka[1], model->material.Ka[2]);
+	glProgramUniform3f(model->shader.shaderID, model->shader.UniformKd, model->material.Kd[0], model->material.Kd[1], model->material.Kd[2]);
+	glProgramUniform3f(model->shader.shaderID, model->shader.UniformKs, model->material.Ks[0], model->material.Ks[1], model->material.Ks[2]);
 
 	glBindVertexArray(model->vao);
 	int size;  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
@@ -37,8 +59,8 @@ void MODEL_TEST_Triangle(Model *model)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &model->vco);
-	glBindBuffer(GL_ARRAY_BUFFER, model->vco);
+	glGenBuffers(1, &model->tbo);
+	glBindBuffer(GL_ARRAY_BUFFER, model->tbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -49,7 +71,7 @@ void MODEL_TEST_Triangle(Model *model)
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, model->vco);
+		glBindBuffer(GL_ARRAY_BUFFER, model->tbo);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	//glDisableVertexAttribArray(0);
@@ -60,7 +82,6 @@ void MODEL_TEST_Triangle(Model *model)
 }
 
 
-// TODO: ID:T:0.1
 void MODEL_TEST_Cube(Model *model)
 {
 	GLfloat vertex[] = {
@@ -88,7 +109,6 @@ void MODEL_TEST_Cube(Model *model)
 		1,0,1,
 		1,1,1,
 
-		//face 4
 		0,0,0,
 		0,0,1,
 		0,1,0,
@@ -96,10 +116,60 @@ void MODEL_TEST_Cube(Model *model)
 		0,0,1,
 		0,1,1,
 
-		//face 5
+		0,1,0,
+		0,1,1,
+		1,1,0,
+		1,1,0,
+		0,1,1,
+		1,1,1,
+
+		0,0,0,
+		0,0,1,
+		1,0,0,
+		1,0,0,
+		0,0,1,
+		1,0,1
 		};
 
-	GLfloat color[9] = {
+	GLfloat color[] = {
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+
+		1.0f, 1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
 		1.0f, 1.0f, 0.0f,
 		0.0f, 1.0f, 1.0f,
 		1.0f, 0.0f, 1.0f
@@ -110,8 +180,8 @@ void MODEL_TEST_Cube(Model *model)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &model->vco);
-	glBindBuffer(GL_ARRAY_BUFFER, model->vco);
+	glGenBuffers(1, &model->tbo);
+	glBindBuffer(GL_ARRAY_BUFFER, model->tbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -122,7 +192,7 @@ void MODEL_TEST_Cube(Model *model)
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, model->vco);
+		glBindBuffer(GL_ARRAY_BUFFER, model->tbo);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	//glDisableVertexAttribArray(1);

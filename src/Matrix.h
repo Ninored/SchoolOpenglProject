@@ -33,6 +33,7 @@ void MAT_Rotate(Mat4f matrix, float deg, float x, float y, float z); // Op de ro
 // Outils de maintenance //
 ///////////////////////////
 void MAT_Print(Mat4f matrix);
+void MAT_PrintFancy(Mat4f matrix);
 
 #endif // MATRIX_H
 	

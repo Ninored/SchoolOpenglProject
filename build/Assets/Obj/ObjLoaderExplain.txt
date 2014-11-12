@@ -1,0 +1,68 @@
+Explication sur le fonctionnement du chargeur.
+Exemple pris sur le fichier "cube.obj" et "cube.mtl"
+
+1_ Mise en memoire du fichier "Matériaux":
+	mtllib cube.mlt
+
+2_ Capture du nom du model affiché
+	o Cube
+
+3_ Mise en mémoire des coordonnées utiles
+	3.a_ Mise en memoire des Vertices
+		v [X] [Y] [Z] (float)
+
+	3.b_ Mise en memoire des Coordonnées textures (plus tard)
+		vt [X] [Y] [Z] (float)
+
+	3.c_ Mise en memoire des normales
+		vn [X] [Y] [Z] (float)
+
+4_ Selection de la matière utilisé ref fichier mtllib
+	usemtl [Material]
+
+5_ Gestion du smooth shading
+	s [off]
+
+6_ construction des faces dans l'ordre: Vertex/Texture/Normal
+	f [V] / [T] / [N] (int)
+ 
+
+Explication de la mise en mémoire du chargement du matériaux utilisé.
+	Voir fonction "usemtl [name]"
+
+1_ Recherche de la ligne portant le "name" demandé.
+	newmtl [Material]
+
+2_ Mise en mémoire des informations utiles
+	2.a_ Mise en mémoire de la puisance spéculaire
+		Ns [power] (float)
+
+	2.b_ Mise en mémoire de la couleur ambiante
+		Ka [R] [G] [B] (float)
+
+	2.c_ Mise en mémoire de la couleur diffuse
+		Kd [R] [G] [B] (float)
+
+	2.d_ Mise en mémoire de la couleur spéculaire
+		Ks [R] [G] [B] (float)
+
+	2.e_ Mise en mémoire de la réfraciton
+		Ni [angle] (float)
+
+	2.f_ Mise en mémoire de la transparance
+		d [valeur] (float)
+		
+	2.g_ Mise en mémoire du type d'illumination:
+			0. Color on and Ambient off
+			1. Color on and Ambient on
+			2. Highlight on
+			3. Reflection on and Ray trace on
+			4. Transparency: Glass on, Reflection: Ray trace on
+			5. Reflection: Fresnel on and Ray trace on
+			6. Transparency: Refraction on, Reflection: Fresnel off and Ray trace on
+			7. Transparency: Refraction on, Reflection: Fresnel on and Ray trace on
+			8. Reflection on and Ray trace off
+			9. Transparency: Glass on, Reflection: Ray trace off
+			10. Casts shadows onto invisible surfaces
+		illum [valeur] (int)
+

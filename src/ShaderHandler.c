@@ -16,6 +16,14 @@ void SH_Load(Shader *shad, const char* vertexFile, const char* fragmentFile)
 	shad->shaderID = LoadShader(vertexFile, fragmentFile);
 	shad->UniformCamMatrix = glGetUniformLocation(shad->shaderID, "CameraMatrix");
 	shad->UniformPerspectiveMatrix = glGetUniformLocation(shad->shaderID, "PerspectiveMatrix");
+	shad->UniformCameraPos = glGetUniformLocation(shad->shaderID, "CameraPos");
+	shad->UniformNs = glGetUniformLocation(shad->shaderID, "material.Ns");
+	shad->UniformKa = glGetUniformLocation(shad->shaderID, "material.Ka");
+	shad->UniformKd = glGetUniformLocation(shad->shaderID, "material.Kd");
+	shad->UniformKs = glGetUniformLocation(shad->shaderID, "material.Ks");
+	LIGHT_LoadUniform(&shad->UniformLight, shad->shaderID);
+
+	printf("camposID = %i\n", shad->UniformCameraPos);
 }
 
 /**
@@ -126,6 +134,8 @@ GLuint LoadShader(const char* vertexFilePath, const char* fragmentFilePath)
 
 	free(vertexCode);
 	free(fragmentCode);
+	glDeleteShader(VertexShaderID);
+	glDeleteShader(FragmentShaderID);
 
 	return programShader;
 }
@@ -141,6 +151,5 @@ void printShaderLog(GLuint shader)
   char log[2048];
   glGetShaderInfoLog (shader, max_length, &actual_length, log);
   printf ("shader info log for GL index %u:\n%s\n", shader, log);
-  //getc();
   exit(1);
 }

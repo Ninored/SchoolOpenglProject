@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Matrix.h"
 #include "Model.h"
+#include "Light.h"
 
 /* Variables d'evenement */
 static SDL_Event event; // Gestionnaire d'evenement
@@ -17,66 +18,10 @@ static int Keys[256] = {0}; // 0 Key up | 1 Key Down
 static int mouseX, mouseY;
 
 static SDL_GLContext openglContext; // Context Opengl
-static void S_DemoOpengl_Resized(void);	// Redimentionnement de la fenetre. A conserver
-
 
 /* Model de la scene */
-Model Model_Triangle;
-
-static void MiniTest(void)
-{
-	MODEL_TEST_Triangle(&Model_Triangle);
-// teste des matrice
-
-	Mat4f matriceA;
-	Mat4f matriceB;
-	Mat4f matriceC;
-
-	matriceA[0][0] = 1;
-	matriceA[0][1] = 2;
-	matriceA[0][2] = 2;
-	matriceA[0][3] = 0;
-
-	matriceA[1][0] = 2;
-	matriceA[1][1] = 1;
-	matriceA[1][2] = 1;
-	matriceA[1][3] = 0;
-
-	matriceA[2][0] = 4;
-	matriceA[2][1] = 6;
-	matriceA[2][2] = 5;
-	matriceA[2][3] = 0;
-
-	matriceA[3][0] = 7;
-	matriceA[3][1] = 9;
-	matriceA[3][2] = 8;
-	matriceA[3][3] = 0;
-//
-	matriceB[0][0] = 5;
-	matriceB[0][1] = 6;
-	matriceB[0][2] = 7;
-	matriceB[0][3] = 0;
-
-	matriceB[1][0] = 2;
-	matriceB[1][1] = 5;
-	matriceB[1][2] = 6;
-	matriceB[1][3] = 0;
-
-	matriceB[2][0] = 1;
-	matriceB[2][1] = 9;
-	matriceB[2][2] = 5;
-	matriceB[2][3] = 0;
-
-	matriceB[3][0] = 6;
-	matriceB[3][1] = 4;
-	matriceB[3][2] = 7;
-	matriceB[3][3] = 0;
-	MAT_Identity(matriceC);
-	MAT_Mult(matriceC, matriceA, matriceB);
-
-}
-
-
+Model Model_Test;
+Light Light_Test;
 
 int S_DemoOpengl_Init(void)
 {
@@ -85,17 +30,19 @@ int S_DemoOpengl_Init(void)
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);	// taille de tempon de profondeur : 24
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3); // Version Majeur OPENGL 3
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2); // Version Mineur OPENGL 2
+ 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 	// creation du context OPENGL
 	openglContext = SDL_GL_CreateContext(Window);
 
-
 	// Rendu: 1=VSync 0=Direct
 	SDL_GL_SetSwapInterval(1);
+
 	printf("\n\n");
 	printf("#################################################\n");
-	printf("[INFO]\tOPENGL_Version: %s\n", glGetString(GL_VERSION));
-	printf("[INFO]\tOPENGL_Renderer: %s\n", glGetString(GL_RENDERER));
+	printf("[INFO]\tOPENGL_Version: \t%s\n", glGetString(GL_VERSION));
+	printf("[INFO]\tOPENGL_Renderer: \t%s\n", glGetString(GL_RENDERER));
 	printf("#################################################\n");
 
 	// initialisation de glew
@@ -107,27 +54,30 @@ int S_DemoOpengl_Init(void)
 		return -1;
 	}
 
+
+	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST); // gestion de la profondeur ZBuffer
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	CAM_Init();
 
-	MiniTest();
+	// Chargement des models
+	MODEL_Load(&Model_Test, "./Assets/obj/sphere.obj", "./Assets/Shader/Default.vs", "./Assets/Shader/Default.fs");
+	LIGHT_Create(&Light_Test, 4,3,2,
+							0,0,0,
+							0.0f,0.0f,0.5f,
+							60
+	);
 
 	return 0;
 }
 
 void S_DemoOpengl_Quit(void)
 {
+	MODEL_Free(&Model_Test);
 	SDL_GL_DeleteContext(openglContext);
-}
-
-void S_DemoOpengl_Resized(void)
-{
-	SDL_GetWindowSize(Window, &WINDOWS_W, &WINDOWS_H);
-	CAM_RebuildProjection();
 }
 
 void S_DemoOpengl_Event(void)
@@ -154,6 +104,20 @@ void S_DemoOpengl_Event(void)
 
 	if(Keys[SDLK_q] == 1)
 		CAM_Right(-0.1f);
+
+	if(Keys[SDLK_KP_PLUS] == 1)
+	{
+		Light_Test.diffuse[0] += 0.01; // TODO: A remplacer par une fonciton
+		Light_Test.diffuse[1] += 0.01; // pour une meilleur lisibilité
+		Light_Test.diffuse[2] += 0.01;
+	}
+
+	if(Keys[SDLK_KP_MINUS] == 1)
+	{
+		Light_Test.diffuse[0] -= 0.01; // TODO: ""
+		Light_Test.diffuse[1] -= 0.01;
+		Light_Test.diffuse[2] -= 0.01;
+	}
 }
 
 void S_DemoOpengl_Compute(void)
@@ -167,8 +131,9 @@ void S_DemoOpengl_Draw(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	MODEL_Display(&Model_Triangle);
-
+	//MODEL_Display(&Model_Triangle);
+	LIGHT_SendUniform(Model_Test.shader.shaderID, &Model_Test.shader.UniformLight, &Light_Test);
+	MODEL_Display(&Model_Test);
 
 	glFlush();
 	SDL_GL_SwapWindow(Window);

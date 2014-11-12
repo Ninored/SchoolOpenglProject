@@ -23,7 +23,7 @@ static enum EN_STATE currentState = STATE_UNKNOW;
 
 void _ExitGame(void)
 {
-	if (quitState != NULL && currentState != STATE_UNKNOW)
+	if (quitState != NULL | currentState != STATE_UNKNOW)
 	{
 		quitState();
 	}
@@ -59,7 +59,7 @@ void _StateDraw(void)
 {
 	if (drawState == NULL | currentState == STATE_UNKNOW)
 	{
-		printf("[ERROR]\tcrawState() is NULL, no instance selected\n");
+		printf("[ERROR]\tdrawState() is NULL, no instance selected\n");
 		//getc();
 		exit(1);
 	}
@@ -88,8 +88,9 @@ void _StateChange(enum EN_STATE newState)
 			exit(1);
 		}
 		break;
+
+		// OPENGL
 		case STATE_OPENGL:
-			// OPENGL state
 		currentState = STATE_OPENGL;
 		initState = S_DemoOpengl_Init;
 		quitState = S_DemoOpengl_Quit;
