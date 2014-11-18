@@ -15,7 +15,9 @@ struct Light {
 	vec3 pos;
 	vec3 direction; // Pour les spotes
 
+	vec3 ambiant;
 	vec3 diffuse;
+	vec3 specular;
 };
 uniform Light light;
 
@@ -25,38 +27,44 @@ uniform vec3 CameraPos;
 in vec4 Color;
 in vec3 Normal;
 in vec3 Position;
-//in vec3 camPos;
 
 out vec4 ColorOut;
 
-
-vec3 tmpSpecular = vec3(0.7,0.7,0.0);
-
 void main() {
-//	vec3 lightPos =  vec3(CameraMatrix * vec4(light.pos, 1.0));
-	vec3 lightPos = light.pos;
+	// Transformation du repère (Camera au centre 0,0,0)
+	vec3 lightPos = vec3( CameraMatrix * vec4(light.pos, 1.0));
+	
+	// Précalcule des vecteurs necessaire
+	vec3 E  = normalize(-Position);
+	vec3 N = normalize(Normal);
+	vec3 L = normalize(lightPos - Position);
+	vec3 R = normalize(reflect(-L, N));
 
-	vec3 n = normalize(Normal);
-	vec3 l =  normalize(lightPos - Position);
+	// Calcul de la lummière ambiante
+	vec3 Camb = light.ambiant * material.Ka;
+	Camb = clamp(Camb, 0.0, 1.0);
 
-	vec3 Cdiff = light.diffuse * max(0.0, dot(n, l));
+	// Calcul de la lumière diffuse
+	vec3 Cdiff = material.Kd * light.diffuse * max(0.0, dot(L, N));
 	Cdiff = clamp(Cdiff, 0.0, 1.0);
 
-	vec3 vue = normalize(CameraPos - Position);
-	vec3 reflection = normalize(reflect(l, n));
+	//Calcul de la lumière spéculaire 
 	vec3 Cspec;
-	if(dot(l, n) < 0.0)
+	if(dot(L,N) < 0) // Vérif direction de vue
 	{
+		// Si la camera pointe dans la direction contraire
+		// a la lumière pas de lumière spéculaire.
+		// (évite la présence de lumière spéculaire a l'arrière d'un objet)
 		Cspec = vec3(0.0);
 	}
 	else
 	{
-
-		Cspec = tmpSpecular * pow( max(0.0, dot(vue, reflection)), 16);
+		// Si tout est OK Calcul
+		Cspec = light.specular * material.Ks * pow( max( 0.0, dot(E, R)), material.Ns);
 		Cspec = clamp(Cspec, 0.0, 1.0);
 	}
 
-	vec4 Cfinal = vec4(Cdiff, 1.0) + vec4(Cspec, 1.0);
-	ColorOut = vec4(5.0,5.0,5.0,1.0);
+	// Adition de tout les lumières
+	vec4 Cfinal = (vec4(Camb, 1.0) + vec4(Cdiff, 1.0) + vec4(Cspec,1.0)) * light.intensity;
 	ColorOut = Cfinal;
 }

@@ -14,14 +14,15 @@
 
 /* Variables d'evenement */
 static SDL_Event event; // Gestionnaire d'evenement
-static int Keys[256] = {0}; // 0 Key up | 1 Key Down
+static int Keys[512] = {0}; // 0 Key up | 1 Key Down
 static int mouseX, mouseY;
 
 static SDL_GLContext openglContext; // Context Opengl
 
 /* Model de la scene */
-Model Model_Test;
 Light Light_Test;
+Model Model_Torus;
+Model Model_Ground;
 
 int S_DemoOpengl_Init(void)
 {
@@ -54,21 +55,23 @@ int S_DemoOpengl_Init(void)
 		return -1;
 	}
 
-
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST); // gestion de la profondeur ZBuffer
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	CAM_Init();
 
 	// Chargement des models
-	MODEL_Load(&Model_Test, "./Assets/obj/sphere.obj", "./Assets/Shader/Default.vs", "./Assets/Shader/Default.fs");
-	LIGHT_Create(&Light_Test, 4,3,2,
+	MODEL_Load(&Model_Torus, &Light_Test, "./Assets/obj/Torus.obj", "./Assets/Shader/Default.vs", "./Assets/Shader/Default.fs");
+	MODEL_Load(&Model_Ground, &Light_Test, "./Assets/obj/Ground.obj", "./Assets/Shader/Default.vs", "./Assets/Shader/Default.fs");
+	LIGHT_Create(&Light_Test, 1.2f,1,2,
 							0,0,0,
-							0.0f,0.0f,0.5f,
-							60
+							0.3f,0.3f,0.3f,
+							0.3f,0.3f,0.3f,
+							0.3f,0.3f,0.3f,
+							2
 	);
 
 	return 0;
@@ -76,7 +79,8 @@ int S_DemoOpengl_Init(void)
 
 void S_DemoOpengl_Quit(void)
 {
-	MODEL_Free(&Model_Test);
+	MODEL_Free(&Model_Ground);
+	MODEL_Free(&Model_Torus);
 	SDL_GL_DeleteContext(openglContext);
 }
 
@@ -105,11 +109,22 @@ void S_DemoOpengl_Event(void)
 	if(Keys[SDLK_q] == 1)
 		CAM_Right(-0.1f);
 
+	if(Keys[SDLK_SPACE] == 1)
+		CAM_Up(0.1f);
+	
+	if(Keys[SDLK_LSHIFT] == 1)
+		CAM_Up(-0.1f);
+
+
 	if(Keys[SDLK_KP_PLUS] == 1)
 	{
 		Light_Test.diffuse[0] += 0.01; // TODO: A remplacer par une fonciton
 		Light_Test.diffuse[1] += 0.01; // pour une meilleur lisibilité
 		Light_Test.diffuse[2] += 0.01;
+
+		Light_Test.specular[0] += 0.01; // TODO: A remplacer par une fonciton
+		Light_Test.specular[1] += 0.01; // pour une meilleur lisibilité
+		Light_Test.specular[2] += 0.01;
 	}
 
 	if(Keys[SDLK_KP_MINUS] == 1)
@@ -117,7 +132,24 @@ void S_DemoOpengl_Event(void)
 		Light_Test.diffuse[0] -= 0.01; // TODO: ""
 		Light_Test.diffuse[1] -= 0.01;
 		Light_Test.diffuse[2] -= 0.01;
+
+		Light_Test.specular[0] -= 0.01; // TODO: A remplacer par une fonciton
+		Light_Test.specular[1] -= 0.01; // pour une meilleur lisibilité
+		Light_Test.specular[2] -= 0.01;
 	}
+	if(Keys[SDLK_KP_6] == 1)
+		Light_Test.pos[0] +=0.1;
+	if(Keys[SDLK_KP_4] == 1)
+		Light_Test.pos[0] -=0.1;
+	if(Keys[SDLK_KP_8] == 1)
+		Light_Test.pos[2] +=0.1;
+	if(Keys[SDLK_KP_2] == 1)
+		Light_Test.pos[2] -=0.1;
+	if(Keys[SDLK_KP_9] == 1)
+		Light_Test.pos[1] +=0.1;
+	if(Keys[SDLK_KP_3] == 1)
+		Light_Test.pos[1] -=0.1;
+	
 }
 
 void S_DemoOpengl_Compute(void)
@@ -132,9 +164,9 @@ void S_DemoOpengl_Draw(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//MODEL_Display(&Model_Triangle);
-	LIGHT_SendUniform(Model_Test.shader.shaderID, &Model_Test.shader.UniformLight, &Light_Test);
-	MODEL_Display(&Model_Test);
+	MODEL_Display(&Model_Ground);
+	MODEL_Display(&Model_Torus);
 
-	glFlush();
+	//glFlush();
 	SDL_GL_SwapWindow(Window);
 }

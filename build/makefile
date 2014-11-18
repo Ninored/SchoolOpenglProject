@@ -17,7 +17,7 @@ OBJ=$(SRC:.c=.o)
 all : $(Exe)
 
 $(Exe): $(OBJ)
-	@$(CC) -o $@ $^ $(LDFLAGS)
+	@$(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS)
 
 %.o: %.c
 	@$(CC) -o $@ -c $< $(CFLAGS)

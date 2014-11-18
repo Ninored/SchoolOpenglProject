@@ -33,14 +33,19 @@ OPENGL:
     ✔ Ajouter dans la struct du shader (./ShaderHandler.h:"typedef struct") les id des variables de matrice de camera et perspective @done (14-10-30 16:59)
     ✔ (CRITIQUE) Vérification de la mémoire aloué pour contenir les fragmentShader et vertexShader. @done (14-10-03 19:56)
     ✔ Tester le chargeur de shader avec un exemple simple. @done (14-09-28 21:59)
+    ☐ Ajouter les textures
     Matrices:
     ✔ Créer fonctions de base @done (14-10-05 19:15)
     Camera:
     ☐ (CRITIQUE) Créer une fonction "quit" pour la camera (libération de la mémoire pour les matrices instanciers). ./Camera.c:"ID:T:0.1"
     Chargeur de model (./Model.h):
+    ☐ Commenter les "strcmp" pour annoncer l'action ./WavefrontLoader.c:"ID:T:0.1"
+    ☐ Ajouter matrice model;
+    ☐ Ajout Textures (ambiant, diff, spec).
     ✔ Créer un chargeur de model. Avec VBO VAO mais pas d'indices @done (14-11-12 22:18)
     ✔ Remplacer le buffer de couleur par la texture. ./Model.c:"ID:T:0.2" @done (14-11-12 22:18)
-    ☐ Commenter les "strcmp" pour annoncer l'action ./WavefrontLoader.c:"ID:T:0.1"
     ✔ Finir le test cube, terminer les faces et les vérifier ./Model.c:"ID:T:0.1" @done (14-10-31 22:35)
     Lumière:
     ✔ Mise en place de la lumière diffuse et spéculaire avec shader. @done (14-11-12 22:19)
+    ☐ Finir les paramètres de la lumière
+    ☐ Ajouter les ombres (Pas important pour le moment);

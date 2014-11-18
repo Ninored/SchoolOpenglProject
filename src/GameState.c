@@ -7,8 +7,8 @@
 #include "DemoOpengl.h"
 
 
-WINDOWS_W = 800;
-WINDOWS_H = 600;
+WINDOWS_W = 1280;
+WINDOWS_H = 720;
 
 static void (*eventState)(void) = NULL;
 static void (*computeState)(void) = NULL;

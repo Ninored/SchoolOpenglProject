@@ -36,7 +36,9 @@ int WAVEFRONT_Load(Model *model, const char* filepath)
 		S_free();
 		return -1;
 	}
-	while(1){
+
+	while(1)
+	{
 		char buffer[1024];
 		int str = fscanf(file, "%s", buffer); // lecture du premier caractère de la ligne
 		
@@ -45,13 +47,6 @@ int WAVEFRONT_Load(Model *model, const char* filepath)
 
 		if(strcmp(buffer, "mtllib") == 0)
 			fscanf(file, "%s\n", materialFilePath);
-
-		if(strcmp(buffer, "usemtl") == 0)
-		{
-			fscanf(file, "%s\n", materialToUse);
-			if( S_MaterialLoad(model, materialFilePath, materialToUse) == -1)
-				S_free();
-		}
 
 		if(strcmp(buffer, "v") == 0)
 		{
@@ -78,6 +73,13 @@ int WAVEFRONT_Load(Model *model, const char* filepath)
 			ARRAY_GLFLOAT_ADD(&textures, tmp[0]); // ajout de la coordonnée
 			ARRAY_GLFLOAT_ADD(&textures, tmp[1]); // ""
 			ARRAY_GLFLOAT_ADD(&textures, tmp[2]); // ""
+		}
+
+		if(strcmp(buffer, "usemtl") == 0)
+		{
+			fscanf(file, "%s\n", materialToUse);
+			if( S_MaterialLoad(model, materialFilePath, materialToUse) == -1)
+				S_free();
 		}
 
 		if(strcmp(buffer, "f") == 0)
@@ -161,10 +163,12 @@ int WAVEFRONT_Load(Model *model, const char* filepath)
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 
-	// destruction des tableaux
+	model->numPoints = vertexArray.used/3;
+	//destruction des tableaux
 	S_free();
 	return 0;
 }
+
 
 int S_MaterialLoad(Model *model, const char* filepath, const char* materialName)
 {

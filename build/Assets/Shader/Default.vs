@@ -19,8 +19,8 @@ mat4 MVP;
 void main() {
 
 	Color = vec4(0, 1.0, 0, 1); // vert
-	Position = vert;
-	Normal   = normalVertex;
+	Position = vec3(CameraMatrix * vec4(vert,1.0));
+	Normal   = vec3(CameraMatrix * vec4(normalVertex, 0.0));
 
 	MVP = PerspectiveMatrix * CameraMatrix;
 	gl_Position = MVP * vec4(vert, 1.0);

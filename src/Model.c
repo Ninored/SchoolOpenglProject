@@ -5,10 +5,16 @@
 
 #include <stdio.h>
 
-void MODEL_Load(Model *model, const char* filepath, const char* vertexShader, const char* fragmentShader)
+void MODEL_Load(Model *model, Light *light, const char* filepath, const char* vertexShader, const char* fragmentShader)
 {
+	model->light = light;
+	model->numPoints = 0;
 	WAVEFRONT_Load(model, filepath);
 	SH_Load(&model->shader, vertexShader, fragmentShader);
+	printf("[INFO]\tModel de %s:\n", filepath);
+	printf("[INFO]\t\tTriangles: %d\n", model->numPoints/3);
+	printf("[INFO]\t\tPoints: %d\n", model->numPoints);
+	printf("\n\n");
 }
 
 void MODEL_Free(Model *model)
@@ -24,19 +30,24 @@ void MODEL_Free(Model *model)
 void MODEL_Display(Model *model)
 {
 	
+
 	glUseProgram(model->shader.shaderID);
-	
 	// envoi des info camera au shader
 	CAM_Display(model);
+
 	//envoi des info material au shader
 	glProgramUniform1f(model->shader.shaderID, model->shader.UniformNs, model->material.Ns);
 	glProgramUniform3f(model->shader.shaderID, model->shader.UniformKa, model->material.Ka[0], model->material.Ka[1], model->material.Ka[2]);
 	glProgramUniform3f(model->shader.shaderID, model->shader.UniformKd, model->material.Kd[0], model->material.Kd[1], model->material.Kd[2]);
 	glProgramUniform3f(model->shader.shaderID, model->shader.UniformKs, model->material.Ks[0], model->material.Ks[1], model->material.Ks[2]);
 
+	// envoi des info lumière
+	LIGHT_SendUniform(model->shader.shaderID, &model->shader.UniformLight, model->light);
+
+	// affichage du model
 	glBindVertexArray(model->vao);
 	int size;  glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-	glDrawArrays(GL_TRIANGLES, 0, ((size) / sizeof(GL_FLOAT)));
+	glDrawArrays(GL_TRIANGLES, 0, model->numPoints);
 	glBindVertexArray(0);
 }
 

@@ -3,6 +3,7 @@
 
 #include "ShaderHandler.h"
 #include "Matrix.h"
+#include "Light.h"
 
 // voir fichier ObjLoaderExplain.txt pour les notations.
 typedef struct{
@@ -19,13 +20,17 @@ typedef struct {
 	GLuint tbo; // buffer texture ("")
 	GLuint nbo; // buffer normals ("")
 
+	int numPoints;
+
 	Shader shader; // shader utilisé.
 
 	Mat4f matrix; // matrice du model
 	Material material;
+	Light *light;
+
 } Model;
 
-void MODEL_Load(Model *model, const char* shadersFiles, const char* vertexShader, const char* fragmentShader);
+void MODEL_Load(Model *model, Light *light, const char* shadersFiles, const char* vertexShader, const char* fragmentShader);
 void MODEL_Free(Model *model);
 void MODEL_Display(Model *model);
 

@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <stdlib.h>
+#include "Light.h"
 
 /**************************************
  * tableau dynamique de GLfloat (float)

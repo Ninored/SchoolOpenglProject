@@ -17,13 +17,12 @@ void SH_Load(Shader *shad, const char* vertexFile, const char* fragmentFile)
 	shad->UniformCamMatrix = glGetUniformLocation(shad->shaderID, "CameraMatrix");
 	shad->UniformPerspectiveMatrix = glGetUniformLocation(shad->shaderID, "PerspectiveMatrix");
 	shad->UniformCameraPos = glGetUniformLocation(shad->shaderID, "CameraPos");
+	
 	shad->UniformNs = glGetUniformLocation(shad->shaderID, "material.Ns");
 	shad->UniformKa = glGetUniformLocation(shad->shaderID, "material.Ka");
 	shad->UniformKd = glGetUniformLocation(shad->shaderID, "material.Kd");
 	shad->UniformKs = glGetUniformLocation(shad->shaderID, "material.Ks");
 	LIGHT_LoadUniform(&shad->UniformLight, shad->shaderID);
-
-	printf("camposID = %i\n", shad->UniformCameraPos);
 }
 
 /**
